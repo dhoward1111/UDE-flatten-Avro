@@ -219,8 +219,8 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
             for (Field field : invalue.schema().fields()) {
                 //top level
                 if (field.name().equals("AfterImage")) {
-                    Schema innerSchema = field.schema().field(field.name()).schema();
-                    Struct innerStruct = invalue.getStruct(field.name()).getStruct(field.name());
+                    Schema innerSchema = field.schema();
+                    Struct innerStruct = invalue.getStruct(field.name());
                     for (Field innerField : innerSchema.fields()) {
                         newRecord.put(innerField.name(), innerStruct.get(innerField));
                     }
@@ -436,7 +436,7 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
                             case "BeforeImage": //remove
                                 break;
                             case "AfterImage": //take AfterImage out
-                                Schema innerSchema = field.schema().field(field.name()).schema();
+                                Schema innerSchema = field.schema();
                                 for (Field innerField : innerSchema.fields()) {
                                     if (innerField.schema().defaultValue() != null) {
                                         innerFieldDefaultValue = innerField.schema().defaultValue();
@@ -453,10 +453,10 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
                         }
                         break;
                     case MAP:
-                        // Map does not seem to work
+
                         SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA,Schema.STRING_SCHEMA);
                         newSchema.field(field.name(),buildmap);
-                        //newSchema.field(field.name(), convertFieldSchema(field.schema(), fieldIsOptional, fieldDefaultValue));
+
                         break;
                     default:
                         throw new DataException("Flatten transformation does not support " + field.schema().type()

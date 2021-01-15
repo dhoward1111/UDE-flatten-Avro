@@ -51,12 +51,11 @@ public class UDEflattenTest {
         Schema supportedTypesSchema = buildSupportedTypesSchema();
         SchemaBuilder builder;
 
-        Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
-        Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
+
         SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA,Schema.STRING_SCHEMA);
         builder = SchemaBuilder.struct();
-        builder.field("BeforeImage", beforeImageSchema);
-        builder.field("AfterImage",afterImageSchema);
+        builder.field("BeforeImage", supportedTypesSchema);
+        builder.field("AfterImage",supportedTypesSchema);
         builder.field("Header",buildmap);
         Schema twoLevelNestedSchema = builder.build();
         Struct supportedTypes = new Struct(supportedTypesSchema);
@@ -69,13 +68,10 @@ public class UDEflattenTest {
         supportedTypes.put("boolean", true);
         supportedTypes.put("string", "stringy");
         supportedTypes.put("bytes", "bytes".getBytes());
-        Struct beforeImageStruct = new Struct(beforeImageSchema);
-        beforeImageStruct.put("BeforeImage", supportedTypes);
-        Struct afterImageStruct = new Struct(afterImageSchema);
-        afterImageStruct.put("AfterImage", supportedTypes);
+
         Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
-        twoLevelNestedStruct.put("BeforeImage", beforeImageStruct);
-        twoLevelNestedStruct.put("AfterImage", afterImageStruct);
+        twoLevelNestedStruct.put("BeforeImage", supportedTypes);
+        twoLevelNestedStruct.put("AfterImage", supportedTypes);
         Map<String, String> HeaderTypes = new HashMap<>();
         HeaderTypes.put("stringMap", "stringy");
         HeaderTypes.put("stringMapEmpty","");
@@ -115,12 +111,11 @@ public class UDEflattenTest {
         xformValue.configure(Collections.singletonMap("BeforeImageTreat", 1));
         Schema supportedTypesSchema = buildSupportedTypesSchema();
         SchemaBuilder builder;
-        Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
-        Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
+
         SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA,Schema.STRING_SCHEMA);
         builder = SchemaBuilder.struct();
-        builder.field("BeforeImage", beforeImageSchema);
-        builder.field("AfterImage",afterImageSchema);
+        builder.field("BeforeImage", supportedTypesSchema);
+        builder.field("AfterImage",supportedTypesSchema);
         builder.field("Header",buildmap);
         Schema twoLevelNestedSchema = builder.build();
 
@@ -135,13 +130,10 @@ public class UDEflattenTest {
         supportedTypes.put("string", "stringy");
         supportedTypes.put("bytes", "bytes".getBytes());
 
-        Struct beforeImageStruct = new Struct(beforeImageSchema);
-        beforeImageStruct.put("BeforeImage", supportedTypes);
-        Struct afterImageStruct = new Struct(afterImageSchema);
-        afterImageStruct.put("AfterImage", supportedTypes);
+
         Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
-        twoLevelNestedStruct.put("BeforeImage", beforeImageStruct);
-        twoLevelNestedStruct.put("AfterImage", afterImageStruct);
+        twoLevelNestedStruct.put("BeforeImage", supportedTypes);
+        twoLevelNestedStruct.put("AfterImage", supportedTypes);
         Map<String, String> HeaderTypes = new HashMap<>();
         HeaderTypes.put("stringMap", "stringy");
         HeaderTypes.put("stringMapEmpty","");
@@ -182,12 +174,11 @@ public class UDEflattenTest {
         xformValue.configure(config);
         Schema supportedTypesSchema = buildSupportedTypesSchema();
         SchemaBuilder builder;
-        Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
-        Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
+
         SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA,Schema.STRING_SCHEMA);
         builder = SchemaBuilder.struct();
-        builder.field("BeforeImage", beforeImageSchema);
-        builder.field("AfterImage",afterImageSchema);
+        builder.field("BeforeImage",supportedTypesSchema);
+        builder.field("AfterImage",supportedTypesSchema);
         builder.field("Header",buildmap);
         Schema twoLevelNestedSchema = builder.build();
 
@@ -202,9 +193,8 @@ public class UDEflattenTest {
         supportedTypes.put("string", "stringy");
         supportedTypes.put("bytes", "bytes".getBytes());
         supportedTypes.put("string", "stringy");
-        Struct beforeImageStruct = new Struct(beforeImageSchema);
-        beforeImageStruct.put("BeforeImage", supportedTypes);
-        Struct afterImageStruct = new Struct(afterImageSchema);
+
+
         Struct supportedTypesA = new Struct(supportedTypesSchema);
         supportedTypesA.put("int8", (byte) 8);
         supportedTypesA.put("int16", (short) 16);
@@ -216,10 +206,10 @@ public class UDEflattenTest {
         supportedTypesA.put("string", "stringy");
         supportedTypesA.put("bytes", "bytes".getBytes());
         supportedTypesA.put("string", "Afterstringy");
-        afterImageStruct.put("AfterImage", supportedTypesA);
+
         Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
-        twoLevelNestedStruct.put("BeforeImage", beforeImageStruct);
-        twoLevelNestedStruct.put("AfterImage", afterImageStruct);
+        twoLevelNestedStruct.put("BeforeImage", supportedTypes);
+        twoLevelNestedStruct.put("AfterImage", supportedTypesA);
         Map<String, String> HeaderTypes = new HashMap<>();
         HeaderTypes.put("TransactionSequence", "stringy");
         HeaderTypes.put("SequenceTransaction","");
@@ -262,12 +252,11 @@ public class UDEflattenTest {
         xformValue.configure(config);
         Schema supportedTypesSchema = buildSupportedTypesSchema();
         SchemaBuilder builder ;
-        Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
-        Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
+
         SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA,Schema.STRING_SCHEMA);
         builder = SchemaBuilder.struct();
-        builder.field("BeforeImage", beforeImageSchema);
-        builder.field("AfterImage",afterImageSchema);
+        builder.field("BeforeImage", supportedTypesSchema);
+        builder.field("AfterImage",supportedTypesSchema);
         builder.field("Header",buildmap);
         Schema twoLevelNestedSchema = builder.build();
 
@@ -282,9 +271,9 @@ public class UDEflattenTest {
         supportedTypes.put("string", "stringy");
         supportedTypes.put("bytes", "bytes".getBytes());
 
-        Struct beforeImageStruct = new Struct(beforeImageSchema);
+        Struct beforeImageStruct = new Struct(supportedTypesSchema);
         beforeImageStruct.put("BeforeImage", null);
-        Struct afterImageStruct = new Struct(afterImageSchema);
+        Struct afterImageStruct = new Struct(supportedTypesSchema);
         afterImageStruct.put("AfterImage", supportedTypes);
         Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
         //twoLevelNestedStruct.put("BeforeImage", beforeImageStruct);
@@ -325,12 +314,11 @@ public class UDEflattenTest {
         xformValue.configure(config);
         Schema supportedTypesSchema = buildSupportedTypesSchema();
         SchemaBuilder builder;
-        Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
-        Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
+
         SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA,Schema.STRING_SCHEMA);
         builder = SchemaBuilder.struct();
-        builder.field("BeforeImage", beforeImageSchema);
-        builder.field("AfterImage",afterImageSchema);
+        builder.field("BeforeImage", supportedTypesSchema);
+        builder.field("AfterImage",supportedTypesSchema);
         builder.field("Header",buildmap);
         Schema twoLevelNestedSchema = builder.build();
 
@@ -345,13 +333,10 @@ public class UDEflattenTest {
         supportedTypes.put("string", "stringy");
         supportedTypes.put("bytes", "bytes".getBytes());
 
-        Struct beforeImageStruct = new Struct(beforeImageSchema);
-        beforeImageStruct.put("BeforeImage", supportedTypes);
-        Struct afterImageStruct = new Struct(afterImageSchema);
-        afterImageStruct.put("AfterImage", supportedTypes);
+
         Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
-        twoLevelNestedStruct.put("BeforeImage", beforeImageStruct);
-        twoLevelNestedStruct.put("AfterImage", afterImageStruct);
+        twoLevelNestedStruct.put("BeforeImage", supportedTypes);
+        twoLevelNestedStruct.put("AfterImage", supportedTypes);
         Map<String, String> HeaderTypes = new HashMap<>();
         HeaderTypes.put("stringMap", "stringy");
         HeaderTypes.put("stringMapEmpty","");
@@ -385,13 +370,10 @@ public class UDEflattenTest {
         supportedTypesBefore.put("boolean", true);
         supportedTypesBefore.put("string", "Beforestringy");
         supportedTypesBefore.put("bytes", "bytes".getBytes());
-        Struct beforeImageStruct1 = new Struct(beforeImageSchema);
-        beforeImageStruct1.put("BeforeImage", supportedTypesBefore);
-        Struct afterImageStruct1 = new Struct(afterImageSchema);
-        afterImageStruct1.put("AfterImage", supportedTypes);
+
         Struct twoLevelNestedStruct1 = new Struct(twoLevelNestedSchema);
-        twoLevelNestedStruct1.put("BeforeImage", beforeImageStruct1);
-        twoLevelNestedStruct1.put("AfterImage", afterImageStruct1);
+        twoLevelNestedStruct1.put("BeforeImage", supportedTypesBefore);
+        twoLevelNestedStruct1.put("AfterImage", supportedTypes);
         Map<String, String> HeaderTypes1 = new HashMap<>();
         HeaderTypes1.put("stringMap", "stringy");
         HeaderTypes1.put("stringMapEmpty","");
@@ -412,12 +394,12 @@ public class UDEflattenTest {
         xformValue.configure(Collections.<String, String>emptyMap());
         Schema supportedTypesSchema = buildSupportedTypesSchema();
         SchemaBuilder builder;
-        Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
-        Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
+        //Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
+        //Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
         SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA,Schema.STRING_SCHEMA);
         builder = SchemaBuilder.struct();
-        builder.field("BeforeImage", beforeImageSchema);
-        builder.field("AfterImage",afterImageSchema);
+        builder.field("BeforeImage", supportedTypesSchema);
+        builder.field("AfterImage",supportedTypesSchema);
         builder.field("Header",buildmap);
         Schema twoLevelNestedSchema = builder.build();
 
@@ -432,12 +414,9 @@ public class UDEflattenTest {
         supportedTypes.put("string", "stringy");
         supportedTypes.put("bytes", "bytes".getBytes());
 
-        Struct beforeImageStruct = new Struct(beforeImageSchema);
-        beforeImageStruct.put("BeforeImage", supportedTypes);
-        Struct afterImageStruct = new Struct(afterImageSchema);
-        afterImageStruct.put("AfterImage", supportedTypes);
+
         Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
-        twoLevelNestedStruct.put("BeforeImage", beforeImageStruct);
+        twoLevelNestedStruct.put("BeforeImage", supportedTypes);
         twoLevelNestedStruct.put("AfterImage", null);
         Map<String, String> HeaderTypes = new HashMap<>();
         //HeaderTypes.put("stringMap", "stringy");
@@ -482,12 +461,9 @@ public class UDEflattenTest {
         supportedTypesBefore.put("boolean", true);
         supportedTypesBefore.put("string", "Beforestringy");
         supportedTypesBefore.put("bytes", "bytes".getBytes());
-        Struct beforeImageStruct1 = new Struct(beforeImageSchema);
-        beforeImageStruct1.put("BeforeImage", supportedTypesBefore);
-        Struct afterImageStruct1 = new Struct(afterImageSchema);
-        afterImageStruct1.put("AfterImage", supportedTypes);
+
         Struct twoLevelNestedStruct1 = new Struct(twoLevelNestedSchema);
-        twoLevelNestedStruct1.put("BeforeImage", beforeImageStruct1);
+        twoLevelNestedStruct1.put("BeforeImage", supportedTypesBefore);
         twoLevelNestedStruct1.put("AfterImage", null);
         Map<String, String> HeaderTypes1 = new HashMap<>();
         HeaderTypes1.put("stringMap", "stringy");
@@ -509,12 +485,12 @@ public class UDEflattenTest {
 
         Schema supportedTypesSchema = buildSupportedTypesSchema();
         SchemaBuilder builder;
-        Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
-        Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
+        //Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
+        //Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
         SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA,Schema.STRING_SCHEMA);
         builder = SchemaBuilder.struct();
-        builder.field("BeforeImage", beforeImageSchema);
-        builder.field("AfterImage",afterImageSchema);
+        builder.field("BeforeImage", supportedTypesSchema);
+        builder.field("AfterImage",supportedTypesSchema);
         builder.field("Header",buildmap);
         Schema twoLevelNestedSchema = builder.build();
 
@@ -529,13 +505,10 @@ public class UDEflattenTest {
         supportedTypes.put("string", "stringy");
         supportedTypes.put("bytes", "bytes".getBytes());
 
-        Struct beforeImageStruct = new Struct(beforeImageSchema);
-        beforeImageStruct.put("BeforeImage", supportedTypes);
-        Struct afterImageStruct = new Struct(afterImageSchema);
-        afterImageStruct.put("AfterImage", supportedTypes);
+
         Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
         twoLevelNestedStruct.put("BeforeImage", null);
-        twoLevelNestedStruct.put("AfterImage", afterImageStruct);
+        twoLevelNestedStruct.put("AfterImage", supportedTypes);
         Map<String, String> HeaderTypes = new HashMap<>();
         //HeaderTypes.put("stringMap", "stringy");
         //HeaderTypes.put("stringMapEmpty","");
@@ -579,13 +552,10 @@ public class UDEflattenTest {
         supportedTypesAfter.put("boolean", true);
         supportedTypesAfter.put("string", "Afterstringy");
         supportedTypesAfter.put("bytes", "bytes".getBytes());
-        Struct beforeImageStruct1 = new Struct(beforeImageSchema);
-        beforeImageStruct1.put("BeforeImage", supportedTypes);
-        Struct afterImageStruct1 = new Struct(afterImageSchema);
-        afterImageStruct1.put("AfterImage", supportedTypesAfter);
+
         Struct twoLevelNestedStruct1 = new Struct(twoLevelNestedSchema);
         twoLevelNestedStruct1.put("BeforeImage", null);
-        twoLevelNestedStruct1.put("AfterImage", afterImageStruct1);
+        twoLevelNestedStruct1.put("AfterImage",supportedTypesAfter);
         Map<String, String> HeaderTypes1 = new HashMap<>();
         HeaderTypes1.put("stringMap", "stringy");
         HeaderTypes1.put("stringMapEmpty","");
@@ -605,13 +575,12 @@ public class UDEflattenTest {
 
         Schema supportedTypesSchema = buildSupportedTypesSchema();
         SchemaBuilder builder;
-        Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
-        Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
+
         SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA,Schema.STRING_SCHEMA);
 
         builder = SchemaBuilder.struct();
-        builder.field("BeforeImage", beforeImageSchema);
-        builder.field("AfterImage",afterImageSchema);
+        builder.field("BeforeImage", supportedTypesSchema);
+        builder.field("AfterImage",supportedTypesSchema);
         builder.field("Header",buildmap);
         Schema twoLevelNestedSchema = builder.build();
 
@@ -626,13 +595,10 @@ public class UDEflattenTest {
         supportedTypes.put("string", "stringy");
         supportedTypes.put("bytes", "bytes".getBytes());
 
-        Struct beforeImageStruct = new Struct(beforeImageSchema);
-        beforeImageStruct.put("BeforeImage", supportedTypes);
-        Struct afterImageStruct = new Struct(afterImageSchema);
-        afterImageStruct.put("AfterImage", supportedTypes);
+
         Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
         twoLevelNestedStruct.put("BeforeImage", null);
-        twoLevelNestedStruct.put("AfterImage", afterImageStruct);
+        twoLevelNestedStruct.put("AfterImage", supportedTypes);
         Map<String, String> HeaderTypes = new HashMap<>();
         //HeaderTypes.put("stringMap", "stringy");
         //HeaderTypes.put("stringMapEmpty","");
@@ -653,13 +619,78 @@ public class UDEflattenTest {
         supportedTypesAfter.put("boolean", true);
         supportedTypesAfter.put("string", "Afterstringy");
         supportedTypesAfter.put("bytes", "bytes".getBytes());
-        Struct beforeImageStruct1 = new Struct(beforeImageSchema);
-        beforeImageStruct1.put("BeforeImage", supportedTypes);
-        Struct afterImageStruct1 = new Struct(afterImageSchema);
-        afterImageStruct1.put("AfterImage", supportedTypesAfter);
+
         Struct twoLevelNestedStruct1 = new Struct(twoLevelNestedSchema);
         twoLevelNestedStruct1.put("BeforeImage", null);
-        twoLevelNestedStruct1.put("AfterImage", afterImageStruct1);
+        twoLevelNestedStruct1.put("AfterImage", supportedTypesAfter);
+        Map<String, String> HeaderTypes1 = new HashMap<>();
+        HeaderTypes1.put("stringMap", "stringy");
+        HeaderTypes1.put("stringMapEmpty","");
+        twoLevelNestedStruct1.put("Header",HeaderTypes);
+        SourceRecord transformed1 = xformValue.apply(new SourceRecord(null, null,
+                "topic", 0, Schema.STRING_SCHEMA, "A key",
+                twoLevelNestedSchema, twoLevelNestedStruct1));
+        assertEquals(Schema.Type.STRUCT, transformed1.valueSchema().type());
+        assertEquals(Schema.Type.STRUCT, transformed1.keySchema().type());
+        Struct transformedStruct1 = (Struct) transformed1.key();
+        assertEquals("Afterstringy", transformedStruct1.getString("string"));
+    }
+    @Test
+    public void testNullBeforeWrapNoBefore() {
+        // Equivalent to Insert records, default options
+        //xformValue.configure(Collections.<String, String>emptyMap());
+
+        Schema supportedTypesSchema = buildSupportedTypesSchema();
+        SchemaBuilder builder;
+
+        SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA,Schema.STRING_SCHEMA);
+
+        builder = SchemaBuilder.struct().optional();
+
+        builder.field("BeforeImage", supportedTypesSchema);
+        builder.field("AfterImage",supportedTypesSchema);
+        builder.field("Header",buildmap);
+        Schema twoLevelNestedSchema = builder.build();
+
+        Struct supportedTypes = new Struct(supportedTypesSchema);
+        supportedTypes.put("int8", (byte) 8);
+        supportedTypes.put("int16", (short) 16);
+        supportedTypes.put("int32", 32);
+        supportedTypes.put("int64", (long) 64);
+        supportedTypes.put("float32", 32.f);
+        supportedTypes.put("float64", 64.);
+        supportedTypes.put("boolean", true);
+        supportedTypes.put("string", "stringy");
+        supportedTypes.put("bytes", "bytes".getBytes());
+
+        Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
+        twoLevelNestedStruct.put("BeforeImage", null);
+        twoLevelNestedStruct.put("AfterImage", supportedTypes);
+        Map<String, String> HeaderTypes = new HashMap<>();
+        //HeaderTypes.put("stringMap", "stringy");
+        //HeaderTypes.put("stringMapEmpty","");
+        twoLevelNestedStruct.put("Header",HeaderTypes);
+
+        // test with primary keys
+        Map<String,Object> config = new HashMap<String,Object>(Collections.singletonMap("pk.fields", Arrays.asList("string")));
+        config.put("BeforeImageTreat", 1);
+        config.put("doWrapkey", 2);
+        xformValue.configure(config);
+
+        Struct supportedTypesAfter = new Struct(supportedTypesSchema);
+        supportedTypesAfter.put("int8", (byte) 8);
+        supportedTypesAfter.put("int16", (short) 16);
+        supportedTypesAfter.put("int32", 32);
+        supportedTypesAfter.put("int64", (long) 64);
+        supportedTypesAfter.put("float32", 32.f);
+        supportedTypesAfter.put("float64", 64.);
+        supportedTypesAfter.put("boolean", true);
+        supportedTypesAfter.put("string", "Afterstringy");
+        supportedTypesAfter.put("bytes", "bytes".getBytes());
+
+        Struct twoLevelNestedStruct1 = new Struct(twoLevelNestedSchema);
+        twoLevelNestedStruct1.put("BeforeImage", null);
+        twoLevelNestedStruct1.put("AfterImage", supportedTypesAfter);
         Map<String, String> HeaderTypes1 = new HashMap<>();
         HeaderTypes1.put("stringMap", "stringy");
         HeaderTypes1.put("stringMapEmpty","");
@@ -677,12 +708,11 @@ public class UDEflattenTest {
         xformValue.configure(Collections.singletonMap("delimiter", "#"));
         Schema supportedTypesSchema = buildSupportedTypesSchema();
         SchemaBuilder builder;
-        Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
-        Schema afterImageSchema = buildAfterImage(supportedTypesSchema);
+
         SchemaBuilder buildmap = SchemaBuilder.map(Schema.STRING_SCHEMA, Schema.STRING_SCHEMA);
         builder = SchemaBuilder.struct();
-        builder.field("BeforeImage", beforeImageSchema);
-        builder.field("AfterImage", afterImageSchema);
+        builder.field("BeforeImage",supportedTypesSchema);
+        builder.field("AfterImage", supportedTypesSchema);
         builder.field("Header", buildmap);
         Schema twoLevelNestedSchema = builder.build();
 
@@ -697,13 +727,10 @@ public class UDEflattenTest {
         supportedTypes.put("string", "stringy");
         supportedTypes.put("bytes", "bytes".getBytes());
 
-        Struct beforeImageStruct = new Struct(beforeImageSchema);
-        beforeImageStruct.put("BeforeImage", supportedTypes);
-        Struct afterImageStruct = new Struct(afterImageSchema);
-        afterImageStruct.put("AfterImage", supportedTypes);
+
         Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
-        twoLevelNestedStruct.put("BeforeImage", beforeImageStruct);
-        twoLevelNestedStruct.put("AfterImage", afterImageStruct);
+        twoLevelNestedStruct.put("BeforeImage", supportedTypes);
+        twoLevelNestedStruct.put("AfterImage", supportedTypes);
         Map<String, String> HeaderTypes = new HashMap<>();
         twoLevelNestedStruct.put("Header", HeaderTypes);
         SourceRecord transformed = xformValue.apply(new SourceRecord(null, null,
@@ -889,7 +916,7 @@ public class UDEflattenTest {
 
     }
     public Schema buildSupportedTypesSchema() {
-        SchemaBuilder builder = SchemaBuilder.struct();
+        SchemaBuilder builder = SchemaBuilder.struct().optional();
         builder.field("int8", Schema.OPTIONAL_INT8_SCHEMA);
         builder.field("int16", Schema.OPTIONAL_INT16_SCHEMA);
         builder.field("int32", Schema.OPTIONAL_INT32_SCHEMA);
@@ -901,17 +928,7 @@ public class UDEflattenTest {
         builder.field("bytes", Schema.OPTIONAL_BYTES_SCHEMA);
         return builder.build();
     }
-    public Schema buildBeforeImage(Schema inSchema) {
-        SchemaBuilder builder = SchemaBuilder.struct().optional();
-        builder.field("BeforeImage", inSchema);
-        builder.defaultValue(null);
-        return builder.build();
-    }
-    public Schema buildAfterImage(Schema inSchema) {
-        SchemaBuilder builder = SchemaBuilder.struct().optional();
-        builder.field("AfterImage", inSchema);
-        builder.defaultValue(null);
-        return builder.build();
-    }
+
+
 
 }
