@@ -64,6 +64,8 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
     private static final int DOWRAPKEY_DEFAULT = 1;
     private static final String DOFLATTEN_CONFIG = "doFlatten";
     private static final boolean DOFLATTEN_DEFAULT = true;
+    private static final String ENABLETOMB_CONFIG = "enableTomb";
+    private static final boolean ENABLETOMB_DEFAULT = true;
     public static final String PK_FIELDS_CONFIG = "pk.fields";
     private static final String PK_FIELDS_DEFAULT = "";
     private static final String PK_FIELDS_DOC =
@@ -85,6 +87,9 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
                     "0 - Do nothing to the key "
                     + "1 - Use the value in PK Fields to build single key value of type string"
                     + "2 - Use the list of PK fields and their types to build a key structure ")
+            .define(ENABLETOMB_CONFIG , ConfigDef.Type.BOOLEAN, ENABLETOMB_DEFAULT, ConfigDef.Importance.MEDIUM,
+                    "True (default) - propagate a tombstone record"
+                            + "False - do not propagate a tombstone record, leave overall value structure")
               .define(PK_FIELDS_CONFIG, ConfigDef.Type.LIST, PK_FIELDS_DEFAULT, ConfigDef.Importance.MEDIUM,
                     PK_FIELDS_DOC );
 
@@ -101,6 +106,7 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
     private String beforeImage;
     private Integer doKeywrap;
     private boolean doFlatten;
+    private boolean enableTomb;
     private String keyWrapElement;
 
 
@@ -121,6 +127,7 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
         beforeImage = config.getString(BEFOREIMAGE_CONFIG);
         doKeywrap = config.getInt(DOWRAPKEY_CONFIG);
         doFlatten = config.getBoolean(DOFLATTEN_CONFIG);
+        enableTomb = config.getBoolean(ENABLETOMB_CONFIG);
         schemaUpdateCache = new SynchronizedCache<>(new LRUCache<>(16));
         wrapKeySchemaCache = new SynchronizedCache<>(new LRUCache<>(16));
         schemaNoBeforeCache = new SynchronizedCache<>(new LRUCache<>(16));
@@ -162,19 +169,20 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
         hasBefore=false;
         tombStone = false;
         if (operatingSchema(record) == null) {
-            throw new DataException("Requires Avro Formatted Data, from apply");
+            throw new DataException("Requires Avro Formatted Data");
         } else {
              // Flatten input record first then process the returned values
+             // need to check if empty value and tombstone
             result = applyWithSchema(record);
             keySchema = buildKeySchema(result.valueSchema());
             if (doFlatten) {
-                if (beforeImageTreat==0) {
+                if (beforeImageTreat==0 & !tombStone) {
                     return applyKeyWrapWithSchema(result, result);
                 } else { // remove beforeImage
                     return applyKeyWrapWithSchema(removeBefore(result),result);
                 }
             } else {
-                if (beforeImageTreat==0) {
+                if (beforeImageTreat==0 & !tombStone) {
                     return applyKeyWrapWithSchema(record,result);
                 } else { // remove beforeImage
                     return applyKeyWrapWithSchema(removeBefore(record),result);
@@ -212,23 +220,37 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
         Struct newRecord = new Struct(updatedSchema);
         Struct invalue = requireStructOrNull(operatingValue(inRecord), PURPOSE);
        if (doFlatten) {
+           if (tombStone) {
+               return newRecord(inRecord,updatedSchema,null);
+           } else
+           {
             for (Field field : updatedSchema.fields()) {  //take fields from Inrecord
                 newRecord.put(field, invalue.get(field.name()));
             }
-        } else { //inRecord will be the layout sent we need 2 of the 3 fields
-            for (Field field : invalue.schema().fields()) {
-                //top level
-                if (field.name().equals("AfterImage")) {
-                    Schema innerSchema = field.schema();
-                    Struct innerStruct = invalue.getStruct(field.name());
-                    for (Field innerField : innerSchema.fields()) {
-                        newRecord.put(innerField.name(), innerStruct.get(innerField));
-                    }
-                }
-                if (field.name().equals("Header")) {
-                    newRecord.put(field.name(), invalue.getMap(field.name()));
-                }
-            }
+           }
+        } else { //inRecord will be the layout sent we need AfterImage and Header
+           if (tombStone) {
+               return newRecord(inRecord,updatedSchema,null);
+           } else {
+               for (Field field : invalue.schema().fields()) {
+                   //top level
+                   if (field.name().equals("AfterImage")) {
+                       if (doFlatten) {
+                           Schema innerSchema = field.schema();
+                           Struct innerStruct = invalue.getStruct(field.name());
+                           for (Field innerField : innerSchema.fields()) {
+                               newRecord.put(innerField.name(), innerStruct.get(innerField));
+                           }
+                       } else {
+                           newRecord.put(field.name(), invalue.get(field.name()));
+                       }
+
+                   }
+                   if (field.name().equals("Header")) {
+                       newRecord.put(field.name(), invalue.getMap(field.name()));
+                   }
+               }
+           }
         }
         return newRecord(inRecord,updatedSchema,newRecord);
     }
@@ -346,7 +368,11 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
                         keyC.put(field.name(), flatvalue.get(field.name()));
                     }
                 }
-                return record.newRecord(record.topic(), record.kafkaPartition(), keySchema, keyC, value.schema(), value, record.timestamp());
+                if (value != null) {
+                    return record.newRecord(record.topic(), record.kafkaPartition(), keySchema, keyC, value.schema(), value, record.timestamp());
+                } else {
+                    return record.newRecord(record.topic(), record.kafkaPartition(), keySchema, keyC, record.valueSchema(), null, record.timestamp());
+                }
             }
         return null;
     }
@@ -364,6 +390,7 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
      */
 
     private void buildUpdatedSchema(Schema schema, String fieldNamePrefix, SchemaBuilder newSchema,  boolean optional, Struct defaultFromParent) {
+
         for (Field field : schema.fields()) {
             if (!field.name().equals("Header"))  {
                 // ignore header field as this will be handled once the data is known
@@ -435,15 +462,19 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
                         switch (field.name()) {
                             case "BeforeImage": //remove
                                 break;
-                            case "AfterImage": //take AfterImage out
-                                Schema innerSchema = field.schema();
-                                for (Field innerField : innerSchema.fields()) {
-                                    if (innerField.schema().defaultValue() != null) {
-                                        innerFieldDefaultValue = innerField.schema().defaultValue();
-                                    } else if (defaultFromParent != null) {
-                                        innerFieldDefaultValue = defaultFromParent.get(innerField);
+                            case "AfterImage": //take AfterImage out if flatten
+                                if (doFlatten) {
+                                    Schema innerSchema = field.schema();
+                                    for (Field innerField : innerSchema.fields()) {
+                                        if (innerField.schema().defaultValue() != null) {
+                                            innerFieldDefaultValue = innerField.schema().defaultValue();
+                                        } else if (defaultFromParent != null) {
+                                            innerFieldDefaultValue = defaultFromParent.get(innerField);
+                                        }
+                                        newSchema.field(innerField.name(), convertFieldSchema(innerField.schema(), fieldIsOptional, innerFieldDefaultValue));
                                     }
-                                    newSchema.field(innerField.name(), convertFieldSchema(innerField.schema(), fieldIsOptional, innerFieldDefaultValue));
+                                } else {
+                                    newSchema.field(field.name(),field.schema());
                                 }
                                 break;
 
@@ -473,7 +504,7 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
         for (Field field: targetSchema.fields()) {
             builder.field(field.name(), field.schema());
         }
-        builder.field(fieldName, Schema.STRING_SCHEMA);
+        builder.field(fieldName, Schema.OPTIONAL_STRING_SCHEMA);
         final Schema newSchema = builder.build();
         schemaUpdateCache.put(origSchema, newSchema);
     }
@@ -524,6 +555,10 @@ public abstract class UDEflatten<R extends ConnectRecord<R>> implements Transfor
                                     buildWithSchema(origSchema, targetSchema, record.getStruct(field.name()), beforeImage, newRecord);
                                 break;
                             case "AfterImage":
+                                if (record.get(field.name()) == null) {
+                                    //tombstone if enabled
+                                    if (enableTomb) tombStone=true;
+                                }
                                 buildWithSchema(origSchema, targetSchema, record.getStruct(field.name()), "", newRecord);
                                 break;
                             case "Header":

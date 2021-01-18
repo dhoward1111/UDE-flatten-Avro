@@ -221,7 +221,7 @@ public class UDEflattenTest {
                 twoLevelNestedSchema, twoLevelNestedStruct));
         assertEquals(Schema.Type.STRUCT, transformed.valueSchema().type());
         Struct transformedStruct = (Struct) transformed.value();
-        assertEquals(10, transformedStruct.schema().fields().size());
+        assertEquals(2, transformedStruct.schema().fields().size());
         try {
             // should be no before image
             assertNotEquals(16, (short) transformedStruct.getInt16("B_int16"));
@@ -229,19 +229,21 @@ public class UDEflattenTest {
         } catch (Exception e) {
 
         }
-        assertEquals(16, (short) transformedStruct.getInt16("int16"));
-        assertEquals(32, (int) transformedStruct.getInt32("int32"));
-        assertEquals(64L, (long) transformedStruct.getInt64("int64"));
-        assertEquals(32.f, transformedStruct.getFloat32("float32"), 0.f);
-        assertEquals(64., transformedStruct.getFloat64("float64"), 0.);
-        assertEquals(true, transformedStruct.getBoolean("boolean"));
-        assertEquals("Afterstringy", transformedStruct.getString("string"));
-        assertArrayEquals("bytes".getBytes(), transformedStruct.getBytes("bytes"));
+        Struct aStruct = transformedStruct.getStruct("AfterImage");
+        assertEquals(16, (short) aStruct.getInt16("int16"));
+        assertEquals(32, (int) aStruct.getInt32("int32"));
+        assertEquals(64L, (long) aStruct.getInt64("int64"));
+        assertEquals(32.f, aStruct.getFloat32("float32"), 0.f);
+        assertEquals(64., aStruct.getFloat64("float64"), 0.);
+        assertEquals(true, aStruct.getBoolean("boolean"));
+        assertEquals("Afterstringy", aStruct.getString("string"));
+        assertArrayEquals("bytes".getBytes(), aStruct.getBytes("bytes"));
         Struct transformedStruct1 = (Struct) transformed.key();
         assertEquals("stringy", transformedStruct1.getString("string"));
 
 
     }
+    @Test
     public void testEmptyBeforeNoBeforeNotflat() {
 
 
@@ -271,13 +273,10 @@ public class UDEflattenTest {
         supportedTypes.put("string", "stringy");
         supportedTypes.put("bytes", "bytes".getBytes());
 
-        Struct beforeImageStruct = new Struct(supportedTypesSchema);
-        beforeImageStruct.put("BeforeImage", null);
-        Struct afterImageStruct = new Struct(supportedTypesSchema);
-        afterImageStruct.put("AfterImage", supportedTypes);
+
         Struct twoLevelNestedStruct = new Struct(twoLevelNestedSchema);
-        //twoLevelNestedStruct.put("BeforeImage", beforeImageStruct);
-       // twoLevelNestedStruct.put("AfterImage", afterImageStruct);
+        twoLevelNestedStruct.put("BeforeImage", null);
+        twoLevelNestedStruct.put("AfterImage", supportedTypes);
         Map<String, String> HeaderTypes = new HashMap<>();
         HeaderTypes.put("TransactionSequence", "stringy");
         HeaderTypes.put("SequenceTransaction","");
@@ -289,7 +288,7 @@ public class UDEflattenTest {
                 twoLevelNestedSchema, twoLevelNestedStruct));
         assertEquals(Schema.Type.STRUCT, transformed.valueSchema().type());
         Struct transformedStruct = (Struct) transformed.value();
-        assertEquals(10, transformedStruct.schema().fields().size());
+        assertEquals(2, transformedStruct.schema().fields().size());
         try {
             // should be no before image
             assertNotEquals(16, (short) transformedStruct.getInt16("B_int16"));
@@ -297,14 +296,15 @@ public class UDEflattenTest {
         } catch (Exception e) {
 
         }
-        assertEquals(16, (short) transformedStruct.getInt16("int16"));
-        assertEquals(32, (int) transformedStruct.getInt32("int32"));
-        assertEquals(64L, (long) transformedStruct.getInt64("int64"));
-        assertEquals(32.f, transformedStruct.getFloat32("float32"), 0.f);
-        assertEquals(64., transformedStruct.getFloat64("float64"), 0.);
-        assertEquals(true, transformedStruct.getBoolean("boolean"));
-        assertEquals("stringy", transformedStruct.getString("string"));
-        assertArrayEquals("bytes".getBytes(), transformedStruct.getBytes("bytes"));
+        Struct aImage = transformedStruct.getStruct("AfterImage");
+        assertEquals(16, (short) aImage.getInt16("int16"));
+        assertEquals(32, (int) aImage.getInt32("int32"));
+        assertEquals(64L, (long) aImage.getInt64("int64"));
+        assertEquals(32.f, aImage.getFloat32("float32"), 0.f);
+        assertEquals(64., aImage.getFloat64("float64"), 0.);
+        assertEquals(true, aImage.getBoolean("boolean"));
+        assertEquals("stringy", aImage.getString("string"));
+        assertArrayEquals("bytes".getBytes(), aImage.getBytes("bytes"));
 
     }
     @Test
@@ -391,7 +391,9 @@ public class UDEflattenTest {
     @Test
     public void testNullMapNestedStruct() {
         // test tombstone in Value
-        xformValue.configure(Collections.<String, String>emptyMap());
+        Map<String,Object> config1 = new HashMap<String,Object>(Collections.singletonMap("enableTomb", false));
+        xformValue.configure(config1);
+
         Schema supportedTypesSchema = buildSupportedTypesSchema();
         SchemaBuilder builder;
         //Schema beforeImageSchema = buildBeforeImage(supportedTypesSchema);
@@ -448,6 +450,7 @@ public class UDEflattenTest {
         assertNull(transformedStruct.getBytes("bytes"));
         //now test wrapped keys
         Map<String,Object> config = new HashMap<String,Object>(Collections.singletonMap("pk.fields", Arrays.asList("string")));
+        config.put("BeforeImageTreat",1);
         config.put("doWrapkey", 2);
         xformValue.configure(config);
 
